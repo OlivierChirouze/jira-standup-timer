@@ -1,7 +1,8 @@
 // ==UserScript==
-// @name         JIRA standup countdown
-// @namespace    http://tampermonkey.net/
-// @version      0.1
+// @name         JIRA stand-up timer
+// @namespace    https://github.com/OlivierChirouze/jira-standup-timer/
+// @version      1.0
+// @update       https://github.com/OlivierChirouze/jira-standup-timer/raw/master/JIRA%20standup%20timer.user.js
 // @description  Add a timer to JIRA board
 // @author       o.chirouze@criteo.com
 // @match        <enter the URL of your Jira board>
@@ -101,7 +102,7 @@ function addTimer() {
         const now = new Date();
         const h = now.getHours();
         const m = checkTime(now.getMinutes());
-        const s = checkTime(now.getSeconds());
+        //const s = checkTime(now.getSeconds());
 
         const timer = document.querySelector('#standupTimer');
         timer.innerHTML = h + ":" + m; //+ ":" + s;
