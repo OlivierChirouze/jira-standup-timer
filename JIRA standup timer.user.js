@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         JIRA stand-up timer
 // @namespace    https://github.com/OlivierChirouze/jira-standup-timer/
-// @version      1.0.1
+// @version      1.1
 // @update       https://github.com/OlivierChirouze/jira-standup-timer/raw/master/JIRA%20standup%20timer.user.js
 // @description  Add a timer to JIRA board
 // @author       OlivierChirouze
@@ -15,6 +15,7 @@ let startHour;
 let endHour;
 let zoomId;
 let autoOpenZoom;
+let autoOpenDelayMin;
 let useZoom;
 
 const notEmpty = (val) => val !== undefined && val !== "";
@@ -52,10 +53,12 @@ function buildConfig(reset = false) {
     useZoom = getBoolConfigValue("useZoom", "Do you want to integrate Zoom link?", reset);
 
     if (useZoom) {
-        zoomId = getConfigValue("zoomId", "", "Enter the zoom id of your stand-up", reset);
-        autoOpenZoom = getBoolConfigValue("autoOpenZoom", "Do you want the zoom meeting to open automatically when stand-up starts?", reset);
+        zoomId = getConfigValue("zoomId", "", "Enter the Zoom id of your stand-up", reset);
+        autoOpenZoom = getBoolConfigValue("autoOpenZoom", "Do you want the Zoom meeting to open automatically when stand-up starts?", reset);
+        autoOpenDelayMin = getConfigValue("autoOpenDelayMin", "", "How many minutes before the meeting starts, do you want Zoom to open?", reset);
     } else {
-        zoomId = "";
+        zoomId = undefined;
+        autoOpenDelayMin = undefined;
         autoOpenZoom = false;
     }
 }
@@ -65,6 +68,7 @@ function addTimer() {
 
     let now = new Date();
     let meetingStart = new Date(Date.parse(now.toDateString() + " " + startHour));
+    let zoomOpening = new Date(meetingStart.valueOf() - autoOpenDelayMin * 60000);
     let meetingEnd = new Date(Date.parse(now.toDateString() + " " + endHour));
     let blinked = false;
     let meetingOpened = false;
@@ -103,6 +107,13 @@ function addTimer() {
         const timer = document.querySelector('#standupTimer');
         timer.innerHTML = h + ":" + m; //+ ":" + s;
 
+
+        if (autoOpenZoom && !meetingOpened
+            && now > zoomOpening && now < meetingEnd) {
+            window.open(zoomUrl());
+            meetingOpened = true;
+        }
+
         if (now > meetingStart) {
             let timeSpent = (now - meetingStart) / (meetingEnd - meetingStart);
 
@@ -114,11 +125,6 @@ function addTimer() {
                 } else {
                     timeSpent = 0;
                     // Make sure to reset flag for open meeting (in case the page stays open 24h!)
-                    meetingOpened = true;
-                }
-            } else {
-                if (autoOpenZoom && !meetingOpened) {
-                    window.open(zoomUrl());
                     meetingOpened = true;
                 }
             }
