@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         JIRA stand-up timer
 // @namespace    https://github.com/OlivierChirouze/jira-standup-timer/
-// @version      1.0
+// @version      1.0.1
 // @update       https://github.com/OlivierChirouze/jira-standup-timer/raw/master/JIRA%20standup%20timer.user.js
 // @description  Add a timer to JIRA board
 // @author       OlivierChirouze
@@ -15,12 +15,11 @@ let startHour;
 let endHour;
 let zoomId;
 let autoOpenZoom;
-let zoomSubDomain;
 let useZoom;
 
 const notEmpty = (val) => val !== undefined && val !== "";
 const configOk = () => notEmpty(startHour) && notEmpty(endHour); // TODO could do better validation! (like end > start)
-const zoomUrl = () => 'https://' + zoomSubDomain + '.zoom.us/j/' + zoomId;
+const zoomUrl = () => 'https://zoom.us/j/' + zoomId;
 
 function getConfigValue(name, defaultValue, promptText, forceUpdate = false) {
     let value = GM_getValue(name);
@@ -53,11 +52,9 @@ function buildConfig(reset = false) {
     useZoom = getBoolConfigValue("useZoom", "Do you want to integrate Zoom link?", reset);
 
     if (useZoom) {
-        zoomSubDomain = getConfigValue("zoomSubDomain", "", "What is your zoom sub-domain? (*.zoom.us)", reset);
         zoomId = getConfigValue("zoomId", "", "Enter the zoom id of your stand-up", reset);
         autoOpenZoom = getBoolConfigValue("autoOpenZoom", "Do you want the zoom meeting to open automatically when stand-up starts?", reset);
     } else {
-        zoomSubDomain = "";
         zoomId = "";
         autoOpenZoom = false;
     }
