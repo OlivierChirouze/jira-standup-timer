@@ -4,8 +4,7 @@
 // @version      1.0
 // @update       https://github.com/OlivierChirouze/jira-standup-timer/raw/master/JIRA%20standup%20timer.user.js
 // @description  Add a timer to JIRA board
-// @author       o.chirouze@criteo.com
-// @match        <enter the URL of your Jira board>
+// @author       OlivierChirouze
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @run-at       document-idle
