@@ -7,6 +7,8 @@ Blink red for some time when you pass the end of the meeting
 - (optional) add a link to a related Zoom meeting (for those doing remote stand-ups)
 - (optional) automatically open that link just before the stand-up starts
 
+If you meeting starts at 9:00 and ends at 9:15, it should like like this:
+
 ![](./timer-screenshot.gif)
 
 ## Installation
