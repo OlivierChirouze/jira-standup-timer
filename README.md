@@ -73,3 +73,7 @@ Many things could be improved, on the top of my head come:
 - allow for "per user" timer (split time by the number of people on the board).
 This is tricky because you want to keep some flexibility.
 - support multiple boards with different configuration
+
+... and any other suggestion you may have.
+
+Bug reports / pull requests or any other feedback welcome (of course).
