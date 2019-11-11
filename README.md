@@ -12,7 +12,11 @@ Blink red for some time when you pass the end of the meeting
 ## Installation
 This script is meant to be used with Tampermonkey *browser extension*, available for both Firefox and Chrome.
 
-Then add this script as a user script and follow the "configuration" instructions.
+- install the extension if you haven't (and thank me later for the discovery)
+- download [JIRA standup timer.user.js](./JIRA%20standup%20timer.js) script
+- add it as a user script
+- follow the "configuration" instructions below
+- access the JIRA board and voilà!
 
 ## Configuration
 
