@@ -18,9 +18,15 @@ let autoOpenZoom;
 let autoOpenDelayMin;
 let useZoom;
 
+const tick = 200;
+
 const notEmpty = (val) => val !== undefined && val !== "";
 const configOk = () => notEmpty(startHour) && notEmpty(endHour); // TODO could do better validation! (like end > start)
 const zoomUrl = () => 'https://zoom.us/j/' + zoomId;
+const withHour = (date, hour) => new Date(Date.parse(date.toDateString() + " " + hour));
+const plusMillisec = (date, minutesToAdd) => new Date(date.valueOf() + minutesToAdd);
+const plusMin = (date, minutesToAdd) => plusMillisec(date, minutesToAdd * 60000);
+let getDate = () => new Date();
 
 function getConfigValue(name, defaultValue, promptText, forceUpdate = false) {
     let value = GM_getValue(name);
@@ -66,10 +72,11 @@ function buildConfig(reset = false) {
 function addTimer() {
     'use strict';
 
-    let now = new Date();
-    let meetingStart = new Date(Date.parse(now.toDateString() + " " + startHour));
-    let zoomOpening = new Date(meetingStart.valueOf() - autoOpenDelayMin * 60000);
-    let meetingEnd = new Date(Date.parse(now.toDateString() + " " + endHour));
+    const now = new Date();
+
+    const meetingStart = withHour(now, startHour);
+    const zoomOpening = plusMin(meetingStart, - autoOpenDelayMin);
+    const meetingEnd = withHour(now, endHour);
     let blinked = false;
     let meetingOpened = false;
 
@@ -93,13 +100,13 @@ function addTimer() {
     let isOver = false;
 
     function updateTime() {
-        setTimeout(updateTime, 500);
+        setTimeout(updateTime, tick);
 
         // If user is currently hovering the div, don't update
         if (isOver)
             return;
 
-        const now = new Date();
+        const now = getDate();
         const h = now.getHours();
         const m = checkTime(now.getMinutes());
         //const s = checkTime(now.getSeconds());
@@ -176,8 +183,8 @@ function addZoomLink() {
     link.setAttribute('target', 'zoom');
     const bjImg = document.createElement('img');
     bjImg.setAttribute('src', 'https://zoom.us/zoom.ico');
-    bjImg.setAttribute('width', 16);
-    bjImg.setAttribute('height', 16);
+    bjImg.setAttribute('width', '16');
+    bjImg.setAttribute('height', '16');
     link.appendChild(bjImg);
 
     document.querySelector('#js-work-quickfilters').appendChild(link);
@@ -189,11 +196,11 @@ function run() {
         setTimeout(addZoomLink, 1000);
     }
 
-    if (configOk())
-    // Leave some time for the page to load
+    if (configOk()) {
+        // Leave some time for the page to load
         setTimeout(addTimer, 1000);
+    }
 }
 
 buildConfig();
 run();
-
