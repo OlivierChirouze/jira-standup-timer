@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         JIRA stand-up timer
 // @namespace    https://github.com/OlivierChirouze/jira-standup-timer/
-// @version      1.1
+// @version      1.2
 // @update       https://github.com/OlivierChirouze/jira-standup-timer/raw/master/JIRA%20standup%20timer.user.js
 // @description  Add a timer to JIRA board
 // @author       OlivierChirouze
@@ -17,6 +17,7 @@ let zoomId;
 let autoOpenZoom;
 let autoOpenDelayMin;
 let useZoom;
+let alignRight;
 
 const tick = 200;
 
@@ -56,6 +57,7 @@ function getBoolConfigValue(name, promptText, forceUpdate = false) {
 function buildConfig(reset = false) {
     startHour = getConfigValue("startHour", "9:45", "At what time does your stand-up START? (hh:mm)", reset);
     endHour = getConfigValue("endHour", "10:00", "At what time does your stand-up END? (hh:mm)", reset);
+    alignRight = getBoolConfigValue("alignRight", "Align timer right? (otherwise align left)", reset);
     useZoom = getBoolConfigValue("useZoom", "Do you want to integrate Zoom link?", reset);
 
     if (useZoom) {
@@ -75,7 +77,7 @@ function addTimer() {
     const now = new Date();
 
     const meetingStart = withHour(now, startHour);
-    const zoomOpening = plusMin(meetingStart, - autoOpenDelayMin);
+    const zoomOpening = plusMin(meetingStart, -autoOpenDelayMin);
     const meetingEnd = withHour(now, endHour);
     let blinked = false;
     let meetingOpened = false;
@@ -142,10 +144,14 @@ function addTimer() {
         }
     }
 
+    const standupId = 'standupTimer';
+
     const timerDiv = document.createElement('div');
-    timerDiv.setAttribute('id', 'standupTimer');
+    removeIfExists(standupId);
+
+    timerDiv.setAttribute('id', standupId);
     timerDiv.setAttribute('class', 'js-quickfilter-button');
-    timerDiv.setAttribute('style', 'font-size: 14pt; float: right; padding: 2px 5px 2px 5px; margin: 0 50px 0 0; border-radius: 3.01px; color: black');
+    timerDiv.setAttribute('style', 'font-size: 14pt; float: ' + (alignRight ? 'right' : 'left') + '; padding: 2px 5px 2px 5px; margin: 0 50px 0 0; border-radius: 3.01px; color: black');
     timerDiv.onclick = () => {
         buildConfig(true);
         run();
@@ -169,13 +175,17 @@ function addTimer() {
     updateTime()
 }
 
+function removeIfExists(elementId) {
+    if (document.querySelector('#' + elementId) !== null)
+        document.querySelector('#' + elementId).remove();
+}
+
 function addZoomLink() {
     'use strict';
 
     const zoomId = 'zoomLink';
 
-    if (document.querySelector('#' + zoomId) !== null)
-        document.querySelector('#' + zoomId).remove();
+    removeIfExists(zoomId);
 
     const link = document.createElement('a');
     link.setAttribute('id', zoomId);
